@@ -1,3 +1,4 @@
+// A node application based on command line used to manage to-do tasks
 var fs = require('fs');
 var path = require('path');
 var args = process.argv.splice(2);
