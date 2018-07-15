@@ -1,4 +1,6 @@
 const http = require('http')
+const url = require('url')
+const net = require('net')
 
 const PORT = process.env.PORT || 4000
 
@@ -45,6 +47,7 @@ server.on('request', (req, res) => {
     'Set-Cookie': 'username=maoyu'
   })
 
+
   // sends a chunk of response body
   res.write(body, 'utf-8', () => {
     console.log('The body has been sent to client')
@@ -55,12 +58,52 @@ server.on('request', (req, res) => {
 })
 
 // listen for clientError event
-server.on('clientError', error => {
+server.on('error', error => {
   console.log(error)
+})
+
+server.on('connect', (req, cltSocket, head) => {
+  // connect to an origin server
+  const srvUrl = url.parse(`http://${req.url}`)
+  const srvSocket = net.connect(srvUrl.port, srvUrl.hostname, () => {
+    cltSocket.write('HTTP/1.1 200 Connection Established\r\n' +
+      'Proxy-agent: Node.js-Proxy\r\n' +
+      '\r\n')
+    srvSocket.write(head)
+    srvSocket.pipe(cltSocket)
+    cltSocket.pipe(srvSocket)
+  })
 })
 
 // start the server to listen for request
 server.listen(PORT, () => {
+
   console.log(`Server started on port http://localhost:${PORT}`)
+
+  const options = {
+    port: 4000,
+    hostname: '127.0.0.1',
+    method: 'CONNECT',
+    path: 'www.baidu.com:80'
+  }
+
+
+  const req = http.request(options)
+  req.end()
+  req.on('connect', (res, socket, head) => {
+    console.log('got connected!')
+
+    // make a request over an HTTP tunnel
+    socket.write('GET / HTTP/1.1\r\n' +
+      'Host: www.baidu.com:80\r\n' +
+      'Connection: close\r\n' +
+      '\r\n')
+    socket.on('data', (chunk) => {
+      console.log(chunk.toString())
+    })
+    socket.on('end', () => {
+      server.close()
+    })
+  })
 })
 
