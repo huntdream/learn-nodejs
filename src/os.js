@@ -16,7 +16,7 @@ console.log('OS constants: \n', constants)
 
 //information about each logical CPU core
 const cpus = os.cpus()
-console.log('CUP core information: \n', cpus)
+console.log('CPU core information: \n', cpus)
 
 // the endianness of the cpu
 const endianness = os.endianness()
