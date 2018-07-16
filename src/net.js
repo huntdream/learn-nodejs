@@ -1,23 +1,39 @@
+// The net module provides an asynchrounous network API for creating stream-based TCP or ICP servers and clients
 const net = require('net')
+const fs = require('fs')
 
-const server = net.createServer()
+
+//server
+const server = net.createServer(socket => {
+  socket.write('Welcome to the server\n')
+  socket.pipe(socket)
+})
 
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {
-    console.log(`PORT ${server.address().port} is already in use`)
+    console.log(`PORT is already in use`)
   }
   console.log(e)
 })
 
-server.on('connection', (socket) => {
-  socket.write('Welcome\n')
-  console.log('A new socket is connected')
-  server.getConnections((err, count) => {
-    if (err) throw err
-    console.log(count)
-  })
+
+server.listen(4000, () => {
+  console.log('Server started on http://localhost:4000')
 })
 
-server.listen(3002, () => {
-  console.log('Address:', server.address())
+
+//client
+const client = net.Socket()
+
+client.connect(4000, () => {
+  console.log('Connected')
+  client.write('Client: Hello from client')
+})
+
+client.on('data', data => {
+  console.log('Server: ' + data)
+})
+
+client.on('close', () => {
+  console.log('Connection closed')
 })
