@@ -11,7 +11,7 @@ const server = net.createServer(socket => {
 
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {
-    console.log(`PORT is already in use`)
+    console.log('PORT is already in use')
   }
   console.log(e)
 })
