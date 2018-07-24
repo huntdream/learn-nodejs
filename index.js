@@ -4,7 +4,7 @@ const path = require('path')
 const DIR = './src'
 
 class Tree {
-  constructor(dir) {
+  constructor() {
     this.tree = {}
   }
 
@@ -17,10 +17,7 @@ class Tree {
         fs.stat(fullPath, (err, stats) => {
           if (err) throw err
           if (stats.isDirectory()) {
-            fs.readdir(dir, (err, subdirs) => {
-              tree[dir] = { type: 'directory' }
-              tree[dir].children = this.generate(fullPath)
-            })
+            tree[dir] = { type: 'children' }
           } else if (stats.isFile()) {
             tree[dir] = { type: 'file' }
           }
