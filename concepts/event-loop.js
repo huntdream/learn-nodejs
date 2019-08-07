@@ -1,3 +1,7 @@
+new Promise(resolve => {
+  console.log('This is Promise 1')
+  resolve()
+}).then(() => console.log('This is Promise 2'))
 setImmediate(() => console.log('this is set immediate 1'))
 setImmediate(() => console.log('this is set immediate 2'))
 setImmediate(() => console.log('this is set immediate 3'))
